@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>모로아 — 로스트아크 통합 포털</title>
+<style>
+:root{
+  --bg:#111113;--bg2:#18181c;--bg3:#1f1f25;--bg4:#27272f;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);
+  --text:#ededf0;--text2:#8888a0;--text3:#55556a;
+  --green:#3dd68c;--green2:#16a34a;--gbg:rgba(61,214,140,0.08);--gborder:rgba(61,214,140,0.18);
+  --gold:#f5c542;--abg:rgba(245,197,66,0.08);--aborder:rgba(245,197,66,0.2);
+  --blue:#5b9cf6;--bbg:rgba(91,156,246,0.08);--bborder:rgba(91,156,246,0.2);
+  --red:#f06a6a;--rbg:rgba(240,106,106,0.08);
+  --purple:#b57cf0;--pbg:rgba(181,124,240,0.08);
+  --r:8px;--rl:12px;--rs:5px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;min-height:100vh}
+.hd{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;gap:14px;height:50px;position:sticky;top:0;z-index:100}
+.logo{font-size:16px;font-weight:800;letter-spacing:-1px;flex-shrink:0}
+.logo em{color:var(--green);font-style:normal}
+.sf{flex:1;max-width:400px;display:flex;gap:6px}
+.sf input{flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:7px 12px;color:var(--text);font-size:13px;outline:none}
+.sf input:focus{border-color:var(--green)}
+.sf input::placeholder{color:var(--text3)}
+.sf button{background:var(--green2);color:#fff;border:none;border-radius:var(--r);padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.layout{display:grid;grid-template-columns:200px minmax(0,1fr);min-height:calc(100vh - 50px)}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:14px 10px;position:sticky;top:50px;height:calc(100vh - 50px);overflow-y:auto}
+.sb-lbl{font-size:10px;font-weight:700;letter-spacing:.07em;color:var(--text3);padding:0 4px 8px;text-transform:uppercase}
+.sc{border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;overflow:hidden;cursor:pointer;transition:border-color .15s,background .15s}
+.sc:hover{border-color:var(--border2);background:var(--bg3)}
+.sc-head{padding:8px 10px;display:flex;align-items:center;justify-content:space-between}
+.sc-name{font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px}
+.sc-arr{font-size:10px;color:var(--text3)}
+.sc-tags{padding:0 10px 8px;display:flex;flex-wrap:wrap;gap:3px}
+.stag{font-size:10px;padding:1px 6px;border-radius:20px;background:var(--bg4);color:var(--text2)}
+.stag-g{background:var(--gbg);color:var(--green);border:1px solid var(--gborder)}
+.stag-b{background:var(--bbg);color:var(--blue)}
+.stag-a{background:var(--abg);color:var(--gold)}
+.stag-p{background:var(--pbg);color:var(--purple)}
+.main{padding:16px 20px}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:80px 20px;text-align:center}
+.empty-ico{font-size:36px;opacity:.2}
+.empty-t{font-size:15px;font-weight:700;color:var(--text2)}
+.empty-d{font-size:12px;color:var(--text3);line-height:1.7;max-width:260px}
+.char-banner{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:20px;display:flex;align-items:center;gap:18px;position:relative;overflow:hidden;margin-bottom:16px}
+.char-banner::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),var(--blue))}
+.char-img{width:56px;height:56px;border-radius:50%;background:var(--gbg);border:2px solid var(--gborder);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:var(--green);flex-shrink:0}
+.char-main{flex:1}
+.char-name{font-size:20px;font-weight:800;letter-spacing:-.5px}
+.char-class{font-size:13px;color:var(--text2);margin-top:3px}
+.char-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.badge{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600}
+.badge-g{background:var(--gbg);color:var(--green);border:1px solid var(--gborder)}
+.badge-b{background:var(--bbg);color:var(--blue);border:1px solid var(--bborder)}
+.badge-gray{background:var(--bg4);color:var(--text2)}
+.char-links{display:flex;gap:5px;flex-shrink:0}
+.cl{font-size:11px;padding:6px 12px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg3);color:var(--text2);cursor:pointer;white-space:nowrap;text-decoration:none;transition:all .12s}
+.cl:hover{border-color:var(--green);color:var(--green)}
+.cl.primary{background:var(--green2);border-color:var(--green2);color:#fff}
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:16px}
+.sec-title{font-size:12px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:6px}
+.sec-title::before{content:'';width:3px;height:12px;background:var(--green);border-radius:2px;display:inline-block}
+.sec-link{font-size:11px;color:var(--text3);text-decoration:none;padding:4px 10px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg3);transition:all .12s}
+.sec-link:hover{border-color:var(--gborder);color:var(--green);background:var(--gbg)}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 15px}
+.panel-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.panel-title{font-size:12px;font-weight:700;color:var(--text)}
+.row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px}
+.row:last-of-type{border-bottom:none}
+.rl{color:var(--text2)}.rv{font-weight:600}.rv-g{color:var(--green);font-weight:700}.rv-a{color:var(--gold);font-weight:700}.rv-r{color:var(--red)}
+.engr-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.engr-item{background:var(--bg3);border-radius:var(--rs);padding:5px 9px;display:flex;justify-content:space-between;font-size:12px;border:1px solid var(--border)}
+.engr-lv{color:var(--green);font-weight:700}
+.gem-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:10px}
+.gem-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:7px 4px;text-align:center}
+.gem-box.lv10{border-color:rgba(245,197,66,.4);background:rgba(245,197,66,.06)}
+.gem-box.lv9{border-color:var(--gborder);background:var(--gbg)}
+.gem-box.lv8{border-color:rgba(91,156,246,.3);background:rgba(91,156,246,.05)}
+.gem-lv{font-size:16px;font-weight:800;line-height:1}
+.gem-box.lv10 .gem-lv{color:var(--gold)}
+.gem-box.lv9 .gem-lv{color:var(--green)}
+.gem-box.lv8 .gem-lv{color:var(--blue)}
+.gem-type{font-size:9px;color:var(--text3);margin-top:2px}
+.bar-row{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.bar-lbl{font-size:11px;color:var(--text2);width:46px;flex-shrink:0}
+.bar-track{flex:1;height:4px;background:var(--bg4);border-radius:2px}
+.bar-fill{height:4px;border-radius:2px}
+.bar-val{font-size:11px;font-weight:600;width:22px;text-align:right;flex-shrink:0}
+.ark-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.ark-type{font-size:11px;color:var(--text2);width:36px;flex-shrink:0;font-weight:600}
+.ark-cores{display:flex;gap:4px;flex:1}
+.ark-core{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:6px 8px;text-align:center;flex:1}
+.ark-core .core-pt{font-size:13px;font-weight:700;color:var(--text)}
+.ark-core .core-lbl{font-size:9px;color:var(--text3);margin-top:1px}
+.ark-core.high{border-color:var(--gborder);background:var(--gbg)}
+.ark-core.high .core-pt{color:var(--green)}
+.ark-core.mid{border-color:var(--aborder);background:var(--abg)}
+.ark-core.mid .core-pt{color:var(--gold)}
+.more-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.more-btn{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg3);cursor:pointer;text-decoration:none;color:inherit;transition:all .12s}
+.more-btn:hover{border-color:var(--gborder);background:var(--gbg)}
+.more-btn:hover .mb-title{color:var(--green)}
+.mb-title{font-size:12px;font-weight:600;color:var(--text2)}
+.mb-arr{font-size:11px;color:var(--text3)}
+.status{border-radius:var(--r);padding:9px 13px;font-size:12px;display:flex;align-items:center;gap:7px;margin-bottom:12px}
+.status.loading{background:var(--abg);border:1px solid var(--aborder);color:var(--gold)}
+.status.err{background:var(--rbg);border:1px solid rgba(240,106,106,.2);color:var(--red)}
+.ark-pts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;font-size:11px;color:var(--text2)}
+.ark-pts strong{color:var(--text)}
+.ark-pts .dot{color:var(--text3)}
+@media(max-width:720px){.layout{grid-template-columns:1fr}.sidebar{display:none}.g2,.more-grid{grid-template-columns:1fr}.char-banner{flex-direction:column;text-align:center}.char-links{justify-content:center;flex-wrap:wrap}}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <div class="logo">모<em>로아</em></div>
+  <form class="sf" onsubmit="doSearch(event)">
+    <input type="text" id="si" placeholder="캐릭터 이름 입력..." autocomplete="off"/>
+    <button type="submit">검색</button>
+  </form>
+</div>
+
+<div class="layout">
+
+<div class="sidebar">
+  <div class="sb-lbl">사이트 모음</div>
+  <div class="sc" onclick="go('https://lostark.game.onstove.com/Profile/Character/'+enc())"><div class="sc-head"><span class="sc-name">🎮 공식 전투정보실</span><span class="sc-arr">↗</span></div><div class="sc-tags"><span class="stag-g stag">캐릭터 조회</span><span class="stag">장비·각인</span><span class="stag">원정대</span><span class="stag">숙제</span></div></div>
+  <div class="sc" onclick="go('https://kloa.gg/characters/'+enc())"><div class="sc-head"><span class="sc-name">🐦 클로아</span><span class="sc-arr">↗</span></div><div class="sc-tags"><span class="stag-g stag">캐릭터 상세</span><span class="stag-b stag">보석</span><span class="stag-b stag">아크그리드</span><span class="stag">시세</span><span class="stag">랭킹</span><span class="stag">떠돌이 상인</span></div></div>
+  <div class="sc" onclick="go('https://loaup.com/character/'+enc())"><div class="sc-head"><span class="sc-name">📊 로아업</span><span class="sc-arr">↗</span></div><div class="sc-tags"><span class="stag-g stag">스펙업 분석</span><span class="stag">시세</span><span class="stag">젬 랭킹</span><span class="stag">숙제</span><span class="stag">젬 시뮬</span></div></div>
+  <div class="sc" onclick="go('https://lopec.kr/character/specPoint/'+enc())"><div class="sc-head"><span class="sc-name">🏆 로펙</span><span class="sc-arr">↗</span></div><div class="sc-tags"><span class="stag-g stag">환산점수</span><span class="stag">기여도 계산</span><span class="stag">보상 효율</span></div></div>
+  <div class="sc" onclick="go('https://lostbuilds.com')"><div class="sc-head"><span class="sc-name">⚔️ 로스트빌드</span><span class="sc-arr">↗</span></div><div class="sc-tags"><span class="stag-g stag">딜 시뮬레이터</span><span class="stag">스킬 분석</span><span class="stag">세팅 비교</span></div></div>
+  <div class="sc" onclick="go('https://www.aloa.gg/arkgrid')"><div class="sc-head"><span class="sc-name">🔮 ALOA</span><span class="sc-arr">↗</span></div><div class="sc-tags"><span class="stag-g stag">아크그리드 최적화</span><span class="stag-p stag">화면인식</span><span class="stag">악세 검색</span></div></div>
+  <div class="sc" onclick="go('https://lo4.app/tools/advanced-refine')"><div class="sc-head"><span class="sc-name">🔨 LOALAB</span><span class="sc-arr">↗</span></div><div class="sc-tags"><span class="stag-g stag">재련 계산기</span><span class="stag">치명타</span><span class="stag">음돌</span><span class="stag">일정</span></div></div>
+  <div class="sc" onclick="go('https://loatto.kr')"><div class="sc-head"><span class="sc-name">🎯 로아또</span><span class="sc-arr">↗</span></div><div class="sc-tags"><span class="stag-g stag">젬파고</span><span class="stag-p stag">돌파고</span><span class="stag">통합 재련</span><span class="stag">지옥 보상</span></div></div>
+  <div class="sc" onclick="go('https://loatool.taeu.kr')"><div class="sc-head"><span class="sc-name">🛠️ 로아도구</span><span class="sc-arr">↗</span></div><div class="sc-tags"><span class="stag-g stag">제작 손익</span><span class="stag">마리샵</span><span class="stag-a stag">크리스탈 시세</span></div></div>
+</div>
+
+<div class="main" id="main">
+  <div class="empty" id="emptyState">
+    <div class="empty-ico">⚔️</div>
+    <div class="empty-t">캐릭터를 검색해보세요</div>
+    <div class="empty-d">검색창에 캐릭터 이름을 입력하면<br>장비·각인·보석·아크그리드를<br>한눈에 볼 수 있어요.</div>
+  </div>
+  <div id="charArea" style="display:none"></div>
+</div>
+
+</div>
+
+<script>
+const API_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IktYMk40TkRDSTJ5NTA5NWpjTWk5TllqY2lyZyIsImtpZCI6IktYMk40TkRDSTJ5NTA5NWpjTWk5TllqY2lyZyJ9.eyJpc3MiOiJodHRwczovL2x1ZHkuZ2FtZS5vbnN0b3ZlLmNvbSIsImF1ZCI6Imh0dHBzOi8vbHVkeS5nYW1lLm9uc3RvdmUuY29tL3Jlc291cmNlcyIsImNsaWVudF9pZCI6IjEwMDAwMDAwMDA1OTE4MzQifQ.b9UnjFsLtOy5wxajlIi0PoiLTOYcacGnq2qQqEwqcyV5AXWvdtdvWTqM6tGBs9wiEm21znOvy48fse6ZW7ydA4DenRqVhTGeyqJw_DdBrpPLTBeXMfA8HndYlKMYQ10cKMptg-GU6Alj-UZAMPjtJGeEvoMdOE-eh28vyBmYMXcWPnJ6Cg-qNXZD9iwaLXUtZa5bfqaYq1w0jjH1UY12P-MrysBN0QDgk5PaGBS3m2eRCbhpjBowDBM_LUlgRCJDQVQMEahe6hCWttJUGsjrpC3vy57jyw27T7xRPzK_OoNU2w0ncxyr24A-r9qqbWAJNVUT-AaghabPFuIjyaW8Pg';
+let curChar = '';
+function enc(){ return encodeURIComponent(curChar||''); }
+function go(url){ window.open(url,'_blank'); }
+
+async function doSearch(e){
+  e.preventDefault();
+  var name = document.getElementById('si').value.trim();
+  if(!name) return;
+  curChar = name;
+  document.getElementById('emptyState').style.display = 'none';
+  var area = document.getElementById('charArea');
+  area.style.display = 'block';
+  area.innerHTML = '<div class="status loading">⏳ '+name+' 정보 불러오는 중...</div>';
+
+  var url = 'https://developer-lostark.game.onstove.com/armories/characters/'+encodeURIComponent(name)+'?filters=profiles%2Bequipment%2Bengravings%2Bgems';
+  var data = null;
+  try {
+    var r = await fetch(url,{headers:{'accept':'application/json','authorization':'bearer '+API_KEY}});
+    if(r.ok) data = await r.json();
+    else if(r.status===429){area.innerHTML='<div class="status err">❌ API 요청 한도 초과. 잠시 후 다시 시도해주세요.</div>';return;}
+    else if(r.status===404){area.innerHTML='<div class="status err">❌ 캐릭터를 찾을 수 없어요.</div>';return;}
+  }catch(ex){}
+  area.innerHTML='';
+  render(data,name);
+}
+
+function add(h){
+  var d=document.createElement('div');
+  d.innerHTML=h;
+  var area=document.getElementById('charArea');
+  while(d.firstChild) area.appendChild(d.firstChild);
+}
+
+function render(data,name){
+  var p=data&&data.ArmoryProfile||{};
+  var eq=data&&data.ArmoryEquipment||[];
+  var engr=data&&data.ArmoryEngraving&&data.ArmoryEngraving.Effects||[];
+  var gems=data&&data.ArmoryGem&&data.ArmoryGem.Gems||[];
+  var isSample=!data;
+  var itemLv=p.ItemMaxLevel||'?';
+  var cls=p.CharacterClassName||'';
+  var srv=p.ServerName||'';
+  var lv=p.CharacterLevel||'';
+  var expLv=p.ExpeditionLevel||'';
+  var E=encodeURIComponent(name);
+  var sub=[];
+  if(cls)sub.push(cls);
+  if(lv)sub.push('Lv.'+lv);
+  if(srv)sub.push(srv);
+
+  // 배너
+  var banner='<div class="char-banner"><div class="char-img">'+name[0]+'</div><div class="char-main">';
+  banner+='<div class="char-name">'+name+'</div>';
+  banner+='<div class="char-class">'+sub.join(' · ')+'</div>';
+  banner+='<div class="char-badges">';
+  banner+='<span class="badge badge-g">아이템 '+itemLv+'</span>';
+  if(expLv) banner+='<span class="badge badge-b">원정대 Lv.'+expLv+'</span>';
+  if(p.GuildName) banner+='<span class="badge badge-gray">길드: '+p.GuildName+'</span>';
+  if(isSample) banner+='<span class="badge badge-gray">샘플 데이터</span>';
+  banner+='</div></div>';
+  banner+='<div class="char-links">';
+  banner+='<a class="cl primary" href="https://kloa.gg/characters/'+E+'" target="_blank">클로아 ↗</a>';
+  banner+='<a class="cl" href="https://lopec.kr/character/specPoint/'+E+'" target="_blank">로펙 ↗</a>';
+  banner+='<a class="cl" href="https://loaup.com/character/'+E+'" target="_blank">로아업 ↗</a>';
+  banner+='</div></div>';
+  add(banner);
+
+  // 장비+각인
+  add('<div class="g2">'+buildEquip(eq,E)+buildEngr(engr,E)+'</div>');
+
+  // 보석
+  add('<div class="sec-hd"><div class="sec-title">보석</div></div>');
+  add(buildGems(gems));
+
+  // 아크그리드+전투특성
+  add('<div class="g2" style="margin-top:16px">'+buildArk(E)+buildStats(p,E)+'</div>');
+
+  // 더보기
+  add('<div class="sec-hd" style="margin-top:16px"><div class="sec-title">더보기</div></div>');
+  var more='<div class="more-grid">';
+  more+='<a class="more-btn" href="https://lo4.app/markets/refine-materials" target="_blank"><span class="mb-title">강화재료 시세</span><span class="mb-arr">↗</span></a>';
+  more+='<a class="more-btn" href="https://loatool.taeu.kr/calculator/bid" target="_blank"><span class="mb-title">경매 입찰 계산기</span><span class="mb-arr">↗</span></a>';
+  more+='<a class="more-btn" href="https://kloa.gg/merchant" target="_blank"><span class="mb-title">떠돌이 상인</span><span class="mb-arr">↗</span></a>';
+  more+='<a class="more-btn" href="https://loatto.kr/hell-rewards" target="_blank"><span class="mb-title">지옥 보상</span><span class="mb-arr">↗</span></a>';
+  more+='</div>';
+  add(more);
+}
+
+function buildEquip(eq,E){
+  var rows='';
+  if(eq.length){
+    for(var i=0;i<Math.min(eq.length,6);i++){
+      var e=eq[i],g=e.Grade||'',gc=g.indexOf('고대')>=0?'rv-a':g.indexOf('유물')>=0?'rv-r':'rv';
+      rows+='<div class="row"><span class="rl">'+(e.Type||'')+'</span><span class="rv"><span class="'+gc+'">'+g+'</span> '+(e.Name||'')+'</span></div>';
+    }
+  }else{
+    var items=[['무기','고대','rv-a','+22'],['투구','고대','rv-a','+20'],['상의','유물','rv-r','+20'],['하의','고대','rv-a','+18'],['장갑','고대','rv-a','+20'],['어깨','고대','rv-a','+20']];
+    for(var i=0;i<items.length;i++){
+      var t=items[i];
+      rows+='<div class="row"><span class="rl">'+t[0]+'</span><span class="rv"><span class="'+t[2]+'">'+t[1]+'</span> '+t[3]+'</span></div>';
+    }
+  }
+  return '<div class="panel"><div class="panel-hd"><span class="panel-title">장비 현황</span><a class="sec-link" href="https://lo4.app/tools/advanced-refine?stage=tier3" target="_blank">재련 계산기 ↗</a></div>'+rows+'</div>';
+}
+
+function buildEngr(engr,E){
+  var sample=[['원한','3'],['돌격대장','3'],['아드레날린','3'],['예리한 둔기','3'],['질량 증가','3'],['기습의 대가','1']];
+  var list=engr.length?engr.slice(0,8).map(function(e){return[e.Name||'',String(e.Level||'')]}):sample;
+  var grid='';
+  for(var i=0;i<list.length;i++){
+    grid+='<div class="engr-item"><span>'+list[i][0]+'</span><span class="engr-lv">Lv.'+list[i][1]+'</span></div>';
+  }
+  return '<div class="panel"><div class="panel-hd"><span class="panel-title">각인</span><a class="sec-link" href="https://kloa.gg/market" target="_blank">각인서 시세 ↗</a></div><div class="engr-grid">'+grid+'</div></div>';
+}
+
+function buildGems(gems){
+  var sample=[[10,'겁화'],[10,'겁화'],[9,'멸화'],[9,'겁화'],[8,'멸화'],[8,'겁화'],[7,'홍염'],[7,'홍염'],[7,'홍염'],[6,'원화'],[5,'원화']];
+  var list;
+  if(gems.length){
+    list=gems.sort(function(a,b){return(b.Level||0)-(a.Level||0)}).slice(0,11).map(function(g){
+      var lv=g.Level||0;
+      var m=(g.Name||'').match(/홍염|원화|겁화|멸화/);
+      return[lv,m?m[0]:'보석'];
+    });
+  }else{list=sample;}
+
+  var grid='<div class="gem-grid">';
+  for(var i=0;i<list.length;i++){
+    var lv=list[i][0],tp=list[i][1];
+    var cls=lv>=10?'lv10':lv>=9?'lv9':lv>=8?'lv8':'';
+    grid+='<div class="gem-box '+cls+'"><div class="gem-lv">'+lv+'</div><div class="gem-type">'+tp+'</div></div>';
+  }
+  grid+='</div>';
+
+  var cnt={};
+  for(var i=0;i<list.length;i++){var lv=list[i][0];cnt[lv]=(cnt[lv]||0)+1;}
+  var bars='';
+  var lvls=[10,9,8,7,6,5];
+  for(var j=0;j<lvls.length;j++){
+    var lv=lvls[j];
+    if(!cnt[lv])continue;
+    var c=lv>=10?'var(--gold)':lv>=9?'var(--green)':lv>=8?'var(--blue)':'var(--text3)';
+    bars+='<div class="bar-row"><span class="bar-lbl">'+lv+'레벨</span><div class="bar-track"><div class="bar-fill" style="width:'+Math.min(cnt[lv]*18,100)+'%;background:'+c+'"></div></div><span class="bar-val">'+cnt[lv]+'개</span></div>';
+  }
+  return '<div class="panel">'+grid+bars+'</div>';
+}
+
+function buildArk(E){
+  var h='<div class="panel">';
+  h+='<div class="panel-hd"><span class="panel-title">아크그리드 코어</span><a class="sec-link" href="https://aloa.gg/ko/arkgrid" target="_blank">ALOA 최적화 ↗</a></div>';
+  h+='<div class="ark-pts"><span>진화 <strong>140</strong></span><span class="dot">·</span><span>깨달음 <strong>101</strong></span><span class="dot">·</span><span>도약 <strong>70</strong></span></div>';
+  h+='<div class="ark-row"><span class="ark-type">질서</span><div class="ark-cores">';
+  h+='<div class="ark-core high"><div class="core-pt">14pt</div><div class="core-lbl">해 코어</div></div>';
+  h+='<div class="ark-core mid"><div class="core-pt">10pt</div><div class="core-lbl">달 코어</div></div>';
+  h+='<div class="ark-core mid"><div class="core-pt">10pt</div><div class="core-lbl">별 코어</div></div>';
+  h+='</div></div>';
+  h+='<div class="ark-row"><span class="ark-type">혼돈</span><div class="ark-cores">';
+  h+='<div class="ark-core high"><div class="core-pt">14pt</div><div class="core-lbl">해 코어</div></div>';
+  h+='<div class="ark-core mid"><div class="core-pt">10pt</div><div class="core-lbl">달 코어</div></div>';
+  h+='<div class="ark-core mid"><div class="core-pt">10pt</div><div class="core-lbl">별 코어</div></div>';
+  h+='</div></div></div>';
+  return h;
+}
+
+function buildStats(p,E){
+  var stats=p.Stats||[];
+  var order=['치명','특화','신속','제압','인내','숙련'];
+  var rows='';
+  if(stats.length){
+    for(var i=0;i<order.length;i++){
+      var nm=order[i],s=null;
+      for(var j=0;j<stats.length;j++){if(stats[j].Type===nm){s=stats[j];break;}}
+      var val=s?s.Value:'0';
+      var isTop=parseInt(String(val).replace(/,/g,''))>1000;
+      rows+='<div class="row"><span class="rl">'+nm+'</span><span class="'+(isTop?'rv-g':'rv')+'">'+val+'</span></div>';
+    }
+  }else{
+    var sample=[['치명','2,040',1],['특화','1,720',1],['신속','720',0],['제압','240',0],['인내','180',0],['숙련','120',0]];
+    for(var i=0;i<sample.length;i++){
+      rows+='<div class="row"><span class="rl">'+sample[i][0]+'</span><span class="'+(sample[i][2]?'rv-g':'rv')+'">'+sample[i][1]+'</span></div>';
+    }
+  }
+  return '<div class="panel"><div class="panel-hd"><span class="panel-title">전투특성</span><a class="sec-link" href="https://kloa.gg/crow/'+E+'" target="_blank">전투력 계산기 ↗</a></div>'+rows+'</div>';
+}
+
+document.getElementById('si').addEventListener('keydown',function(e){if(e.key==='Enter')doSearch(e);});
+</script>
+</body>
+</html>
